@@ -1,27 +1,23 @@
+#!/bin/bash
+
+set -e
+
+# Mettez à jour et installez les packages de base
 apt-get update
 apt-get upgrade -y
-apt-get install -y vim git
+apt-get install -y vim git python3 python3-virtualenv python-is-python3 python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools libicu-dev python3-icu pkg-config nginx
 
-# Install Python
-apt-get install -y python3 python3-virtualenv python-is-python3 python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
+# Téléchargez le code source de LibreTranslate
+git clone https://github.com/LibreTranslate/LibreTranslate.git /home/libretranslate/LibreTranslate
 
-# Install PyICU dependencies
-# https://community.libretranslate.com/t/pyicu-fails-to-install-on-ubuntu-20-04/23
-apt-get install -y libicu-dev python3-icu pkg-config
+# Configurez l'environnement virtuel
+virtualenv /home/libretranslate/LibreTranslate/env
 
-# Install Nginx
-apt-get install -y nginx
+# Installez gunicorn
+/home/libretranslate/LibreTranslate/env/bin/pip install gunicorn
 
-# Download LibreTranslate source
-git clone https://github.com/LibreTranslate/LibreTranslate.git ~/LibreTranslate
+# Installez LibreTranslate
+/home/libretranslate/LibreTranslate/env/bin/pip install /home/libretranslate/LibreTranslate/ --no-cache-dir
 
-# Setup virtualenv
-virtualenv ~/LibreTranslate/env
-
-# Install gunicorn
-~/LibreTranslate/env/bin/pip install gunicorn
-
-# Install and run LibreTranslate on port 5000
-~/LibreTranslate/env/bin/pip install ~/LibreTranslate/ --no-cache-dir
-~/LibreTranslate/env/bin/libretranslate
-
+# Exécutez LibreTranslate sur le port 5000
+/home/libretranslate/LibreTranslate/env/bin/libretranslate
